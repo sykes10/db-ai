@@ -1,0 +1,16 @@
+{
+  "name": "db-ai",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "pnpm -r run build",
+    "test": "pnpm -r run test",
+    "cli": "pnpm --filter @db-ai/cli start",
+    "db:up": "docker compose up -d",
+    "db:down": "docker compose down",
+    "db:reset": "docker compose down -v && docker compose up -d"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
