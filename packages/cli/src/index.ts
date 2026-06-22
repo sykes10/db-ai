@@ -14,12 +14,7 @@ import {
   runEval,
   type SqlRunner,
 } from "@db-ai/ai";
-import {
-  findJoinPath,
-  findTableByName,
-  formatRelationshipTree,
-  getNeighbors,
-} from "@db-ai/core";
+import { findJoinPath, findTableByName, formatRelationshipTree, getNeighbors } from "@db-ai/core";
 import {
   createPostgresClient,
   executeQuery,
@@ -43,7 +38,9 @@ program
   .description("Check database connectivity")
   .option("--url <connectionString>", "Postgres connection string")
   .action(async (options: { url?: string }) => {
-    const client = await createPostgresClient({ connectionString: getConnectionString(options.url) });
+    const client = await createPostgresClient({
+      connectionString: getConnectionString(options.url),
+    });
     try {
       const result = await client.query<{ database: string; version: string }>(
         "SELECT current_database() AS database, version() AS version",
@@ -108,7 +105,9 @@ program
   .option("--url <connectionString>", "Postgres connection string")
   .option("-o, --out <file>", "Write graph JSON to file")
   .action(async (options: { url?: string; out?: string }) => {
-    const client = await createPostgresClient({ connectionString: getConnectionString(options.url) });
+    const client = await createPostgresClient({
+      connectionString: getConnectionString(options.url),
+    });
     try {
       const graph = await introspectSchema(client);
 
@@ -140,7 +139,9 @@ program
   .option("--depth <n>", "Tree depth", "2")
   .option("--url <connectionString>", "Postgres connection string")
   .action(async (options: { from: string; schema: string; depth: string; url?: string }) => {
-    const client = await createPostgresClient({ connectionString: getConnectionString(options.url) });
+    const client = await createPostgresClient({
+      connectionString: getConnectionString(options.url),
+    });
     try {
       const graph = await introspectSchema(client);
       const table = findTableByName(graph, options.from);
@@ -178,7 +179,9 @@ program
   .option("--schema <schema>", "Schema name", "public")
   .option("--url <connectionString>", "Postgres connection string")
   .action(async (options: { from: string; to: string; schema: string; url?: string }) => {
-    const client = await createPostgresClient({ connectionString: getConnectionString(options.url) });
+    const client = await createPostgresClient({
+      connectionString: getConnectionString(options.url),
+    });
     try {
       const graph = await introspectSchema(client);
       const fromTable = findTableByName(graph, options.from);
@@ -207,9 +210,7 @@ program
       console.log(path.tables.join(" → "));
       console.log("\nJoins:");
       for (const join of path.joins) {
-        console.log(
-          `  ${join.fromTable}.${join.fromColumn} → ${join.toTable}.${join.toColumn}`,
-        );
+        console.log(`  ${join.fromTable}.${join.fromColumn} → ${join.toTable}.${join.toColumn}`);
       }
     } finally {
       await client.close();
@@ -221,18 +222,15 @@ program
   .description("Build AI context packet for a question (no LLM call)")
   .argument("<question>", "Natural language question")
   .option("--url <connectionString>", "Postgres connection string")
-  .option(
-    "--mode <mode>",
-    "Privacy mode: local-only | schema-sharing | full-ai",
-    "schema-sharing",
-  )
+  .option("--mode <mode>", "Privacy mode: local-only | schema-sharing | full-ai", "schema-sharing")
   .action(async (question: string, options: { url?: string; mode: string }) => {
-    const client = await createPostgresClient({ connectionString: getConnectionString(options.url) });
+    const client = await createPostgresClient({
+      connectionString: getConnectionString(options.url),
+    });
     try {
       const graph = await introspectSchema(client);
       const privacyMode = parsePrivacyMode(options.mode);
-      const sampleFetcher =
-        privacyMode === "full-ai" ? createSampleFetcher(client) : undefined;
+      const sampleFetcher = privacyMode === "full-ai" ? createSampleFetcher(client) : undefined;
 
       const packet = await buildContextOnly(graph, question, {
         privacyMode,
@@ -263,83 +261,82 @@ program
   .option("--url <connectionString>", "Postgres connection string")
   .option("--provider <name>", "LLM provider: openai | anthropic | ollama")
   .option("--model <model>", "Model override")
-  .option(
-    "--mode <mode>",
-    "Privacy mode: schema-sharing | full-ai",
-    "schema-sharing",
-  )
+  .option("--mode <mode>", "Privacy mode: schema-sharing | full-ai", "schema-sharing")
   .option("--yes", "Auto-approve read-only queries and execute")
   .option("--no-execute", "Generate SQL but do not execute")
-  .action(async (
-    question: string,
-    options: {
-      url?: string;
-      provider?: string;
-      model?: string;
-      mode: string;
-      yes?: boolean;
-      execute?: boolean;
-    },
-  ) => {
-    const client = await createPostgresClient({ connectionString: getConnectionString(options.url) });
-    try {
-      const graph = await introspectSchema(client);
-      const privacyMode = parsePrivacyMode(options.mode);
-      const sampleFetcher =
-        privacyMode === "full-ai" ? createSampleFetcher(client) : undefined;
-
-      console.log("Thinking...\n");
-
-      const { context, response } = await askQuestion(graph, question, {
-        privacyMode,
-        sampleFetcher,
-        provider: parseProvider(options.provider),
-        model: options.model,
+  .action(
+    async (
+      question: string,
+      options: {
+        url?: string;
+        provider?: string;
+        model?: string;
+        mode: string;
+        yes?: boolean;
+        execute?: boolean;
+      },
+    ) => {
+      const client = await createPostgresClient({
+        connectionString: getConnectionString(options.url),
       });
+      try {
+        const graph = await introspectSchema(client);
+        const privacyMode = parsePrivacyMode(options.mode);
+        const sampleFetcher = privacyMode === "full-ai" ? createSampleFetcher(client) : undefined;
 
-      console.log(formatAgentResponse(response));
-      console.log(`\n(Context: ${context.selectedTables.length}/${context.totalTables} tables)`);
+        console.log("Thinking...\n");
 
-      if (!response.sql || options.execute === false) {
-        return;
+        const { context, response } = await askQuestion(graph, question, {
+          privacyMode,
+          sampleFetcher,
+          provider: parseProvider(options.provider),
+          model: options.model,
+        });
+
+        console.log(formatAgentResponse(response));
+        console.log(`\n(Context: ${context.selectedTables.length}/${context.totalTables} tables)`);
+
+        if (!response.sql || options.execute === false) {
+          return;
+        }
+
+        const review = reviewAgentResponse(response);
+        console.log(`\nQuery type: ${review.classification}`);
+
+        if (review.isDestructive) {
+          console.error(`\nBlocked: ${review.reason}`);
+          process.exitCode = 1;
+          return;
+        }
+
+        let approved = options.yes === true;
+        if (!approved) {
+          approved = await confirmExecution("Execute this query?");
+        }
+
+        if (!approved) {
+          console.log("Skipped execution.");
+          return;
+        }
+
+        const executor: QueryExecutor = {
+          query: async (sql, params) => {
+            const q = await client.query(sql, params);
+            return {
+              rows: q.rows as Record<string, unknown>[],
+              rowCount: q.rowCount ?? q.rows.length,
+              fields: q.fields.map((f) => f.name),
+            };
+          },
+        };
+        const result = await executeQuery(executor, response.sql, { readOnly: true });
+        console.log(`\n${result.rowCount} row(s):\n`);
+        console.log(formatResultsTable(result.rows, result.fields, result.truncated));
+      } finally {
+        await client.close();
       }
-
-      const review = reviewAgentResponse(response);
-      console.log(`\nQuery type: ${review.classification}`);
-
-      if (review.isDestructive) {
-        console.error(`\nBlocked: ${review.reason}`);
-        process.exitCode = 1;
-        return;
-      }
-
-      let approved = options.yes === true;
-      if (!approved) {
-        approved = await confirmExecution("Execute this query?");
-      }
-
-      if (!approved) {
-        console.log("Skipped execution.");
-        return;
-      }
-
-      const executor: QueryExecutor = {
-        query: async (sql, params) => {
-          const q = await client.query(sql, params);
-          return {
-            rows: q.rows as Record<string, unknown>[],
-            rowCount: q.rowCount ?? q.rows.length,
-            fields: q.fields.map((f) => f.name),
-          };
-        },
-      };
-      const result = await executeQuery(executor, response.sql, { readOnly: true });
-      console.log(`\n${result.rowCount} row(s):\n`);
-      console.log(formatResultsTable(result.rows, result.fields, result.truncated));
-    } finally {
-      await client.close();
-    }
-  });
+    },
+  );
 
 program
   .command("explain-query")
@@ -349,7 +346,9 @@ program
   .option("--provider <name>", "LLM provider: openai | anthropic | ollama")
   .option("--model <model>", "Model override")
   .action(async (options: { sql: string; url?: string; provider?: string; model?: string }) => {
-    const client = await createPostgresClient({ connectionString: getConnectionString(options.url) });
+    const client = await createPostgresClient({
+      connectionString: getConnectionString(options.url),
+    });
     try {
       const graph = await introspectSchema(client);
       console.log("Analyzing...\n");
@@ -371,7 +370,9 @@ program
   .option("--model <model>", "Model override")
   .option("--limit <n>", "Run only the first N cases")
   .action(async (options: { url?: string; provider?: string; model?: string; limit?: string }) => {
-    const client = await createPostgresClient({ connectionString: getConnectionString(options.url) });
+    const client = await createPostgresClient({
+      connectionString: getConnectionString(options.url),
+    });
     try {
       const graph = await introspectSchema(client);
 

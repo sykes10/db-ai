@@ -20,8 +20,20 @@ const sampleGraph: DatabaseGraph = {
       kind: "table",
       primaryKey: ["customer_id"],
       columns: [
-        { name: "customer_id", dataType: "integer", nullable: false, defaultValue: null, ordinalPosition: 1 },
-        { name: "email", dataType: "text", nullable: false, defaultValue: null, ordinalPosition: 2 },
+        {
+          name: "customer_id",
+          dataType: "integer",
+          nullable: false,
+          defaultValue: null,
+          ordinalPosition: 1,
+        },
+        {
+          name: "email",
+          dataType: "text",
+          nullable: false,
+          defaultValue: null,
+          ordinalPosition: 2,
+        },
       ],
     },
     {
@@ -31,8 +43,20 @@ const sampleGraph: DatabaseGraph = {
       kind: "table",
       primaryKey: ["rental_id"],
       columns: [
-        { name: "rental_id", dataType: "integer", nullable: false, defaultValue: null, ordinalPosition: 1 },
-        { name: "customer_id", dataType: "integer", nullable: false, defaultValue: null, ordinalPosition: 2 },
+        {
+          name: "rental_id",
+          dataType: "integer",
+          nullable: false,
+          defaultValue: null,
+          ordinalPosition: 1,
+        },
+        {
+          name: "customer_id",
+          dataType: "integer",
+          nullable: false,
+          defaultValue: null,
+          ordinalPosition: 2,
+        },
       ],
     },
     {
@@ -42,8 +66,20 @@ const sampleGraph: DatabaseGraph = {
       kind: "table",
       primaryKey: ["payment_id"],
       columns: [
-        { name: "payment_id", dataType: "integer", nullable: false, defaultValue: null, ordinalPosition: 1 },
-        { name: "rental_id", dataType: "integer", nullable: false, defaultValue: null, ordinalPosition: 2 },
+        {
+          name: "payment_id",
+          dataType: "integer",
+          nullable: false,
+          defaultValue: null,
+          ordinalPosition: 1,
+        },
+        {
+          name: "rental_id",
+          dataType: "integer",
+          nullable: false,
+          defaultValue: null,
+          ordinalPosition: 2,
+        },
       ],
     },
   ],

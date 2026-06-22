@@ -2,12 +2,9 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "dist",
-    "rootDir": "src"
+    "rootDir": "src",
+    "composite": true
   },
   "include": ["src/**/*"],
-  "references": [
-    { "path": "../core" },
-    { "path": "../db-postgres" },
-    { "path": "../ai" }
-  ]
+  "references": [{ "path": "../core" }, { "path": "../db-postgres" }, { "path": "../ai" }]
 }

@@ -18,7 +18,8 @@ describe("parseAgentResponse", () => {
   });
 
   it("extracts JSON from markdown fences", () => {
-    const raw = 'Here is the result:\n```json\n{"intent":"data_discovery","sql":null,"explanation":"Payment status is in payment.amount","tables_used":["payment"],"confidence":"high","warnings":[]}\n```';
+    const raw =
+      'Here is the result:\n```json\n{"intent":"data_discovery","sql":null,"explanation":"Payment status is in payment.amount","tables_used":["payment"],"confidence":"high","warnings":[]}\n```';
     const result = parseAgentResponse(raw);
     expect(result.intent).toBe("data_discovery");
     expect(result.tables_used).toContain("payment");

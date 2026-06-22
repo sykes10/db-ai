@@ -52,10 +52,7 @@ export function formatTableSummary(summary: TableSummary): string {
   return lines.join("\n");
 }
 
-export function formatSampleData(
-  tableName: string,
-  rows: Record<string, unknown>[],
-): string {
+export function formatSampleData(tableName: string, rows: Record<string, unknown>[]): string {
   if (rows.length === 0) {
     return `Sample rows for ${tableName}: (empty)`;
   }

@@ -1,9 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import {
-  assertPrivacyModeAllowsExternal,
-  isLocalProvider,
-  resolveAiConfig,
-} from "./factory.js";
+import { assertPrivacyModeAllowsExternal, isLocalProvider, resolveAiConfig } from "./factory.js";
 
 const ENV_KEYS = [
   "DB_AI_LLM",

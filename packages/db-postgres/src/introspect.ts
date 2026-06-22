@@ -63,23 +63,30 @@ export async function introspectSchema(client: PostgresClient): Promise<Database
   );
   const database = dbResult.rows[0]?.database ?? "unknown";
 
-  const tablesResult = await client.query<TableRow>(`
+  const tablesResult = await client.query<TableRow>(
+    `
     SELECT table_schema, table_name, table_type
     FROM information_schema.tables
     WHERE table_schema NOT IN (${SYSTEM_SCHEMAS.map((_, i) => `$${i + 1}`).join(", ")})
       AND table_type IN ('BASE TABLE', 'VIEW')
     ORDER BY table_schema, table_name
-  `, SYSTEM_SCHEMAS);
+  `,
+    SYSTEM_SCHEMAS,
+  );
 
-  const columnsResult = await client.query<ColumnRow>(`
+  const columnsResult = await client.query<ColumnRow>(
+    `
     SELECT table_schema, table_name, column_name, data_type,
            is_nullable, column_default, ordinal_position
     FROM information_schema.columns
     WHERE table_schema NOT IN (${SYSTEM_SCHEMAS.map((_, i) => `$${i + 1}`).join(", ")})
     ORDER BY table_schema, table_name, ordinal_position
-  `, SYSTEM_SCHEMAS);
+  `,
+    SYSTEM_SCHEMAS,
+  );
 
-  const pkResult = await client.query<PrimaryKeyRow>(`
+  const pkResult = await client.query<PrimaryKeyRow>(
+    `
     SELECT
       tc.table_schema,
       tc.table_name,
@@ -92,9 +99,12 @@ export async function introspectSchema(client: PostgresClient): Promise<Database
     WHERE tc.constraint_type = 'PRIMARY KEY'
       AND tc.table_schema NOT IN (${SYSTEM_SCHEMAS.map((_, i) => `$${i + 1}`).join(", ")})
     ORDER BY tc.table_schema, tc.table_name, kcu.ordinal_position
-  `, SYSTEM_SCHEMAS);
+  `,
+    SYSTEM_SCHEMAS,
+  );
 
-  const fkResult = await client.query<ForeignKeyRow>(`
+  const fkResult = await client.query<ForeignKeyRow>(
+    `
     SELECT
       tc.constraint_name,
       kcu.table_schema AS from_schema,
@@ -118,9 +128,12 @@ export async function introspectSchema(client: PostgresClient): Promise<Database
     WHERE tc.constraint_type = 'FOREIGN KEY'
       AND kcu.table_schema NOT IN (${SYSTEM_SCHEMAS.map((_, i) => `$${i + 1}`).join(", ")})
     ORDER BY from_schema, from_table, tc.constraint_name, kcu.ordinal_position
-  `, SYSTEM_SCHEMAS);
+  `,
+    SYSTEM_SCHEMAS,
+  );
 
-  const indexResult = await client.query<IndexRow>(`
+  const indexResult = await client.query<IndexRow>(
+    `
     SELECT
       i.relname AS index_name,
       n.nspname AS table_schema,
@@ -137,7 +150,9 @@ export async function introspectSchema(client: PostgresClient): Promise<Database
     WHERE n.nspname NOT IN (${SYSTEM_SCHEMAS.map((_, i) => `$${i + 1}`).join(", ")})
       AND t.relkind IN ('r', 'v')
     ORDER BY n.nspname, t.relname, i.relname, ordinal_position
-  `, SYSTEM_SCHEMAS);
+  `,
+    SYSTEM_SCHEMAS,
+  );
 
   const primaryKeys = groupPrimaryKeys(pkResult.rows);
   const columnsByTable = groupColumns(columnsResult.rows);
@@ -259,7 +274,9 @@ function buildSchemas(tables: Table[]): Schema[] {
     }));
 }
 
-export async function introspectFromConnectionString(connectionString: string): Promise<DatabaseGraph> {
+export async function introspectFromConnectionString(
+  connectionString: string,
+): Promise<DatabaseGraph> {
   const { createPostgresClient } = await import("./connection.js");
   const client = await createPostgresClient({ connectionString });
   try {

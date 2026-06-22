@@ -21,10 +21,7 @@ export interface AgentOptions extends CreateProviderOptions {
   llm?: LLMProvider;
 }
 
-async function runAgent(
-  userPrompt: string,
-  options: AgentOptions = {},
-): Promise<AgentResponse> {
+async function runAgent(userPrompt: string, options: AgentOptions = {}): Promise<AgentResponse> {
   const llm = options.llm ?? (await createLLMProvider(options));
   const raw = await llm.complete([
     { role: "system", content: SYSTEM_PROMPT },

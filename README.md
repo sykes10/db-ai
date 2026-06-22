@@ -27,13 +27,13 @@ Execute this query? [y/N]
 
 ## Why this is different
 
-| | Traditional clients (DataGrip, DBeaver, TablePlus) | db-ai |
-|---|---|---|
-| Primary interface | SQL editor | Natural language |
-| Schema awareness | You hold it in your head | Introspected relationship graph |
-| AI | Chat sidebar that guesses | Grounded in the actual schema |
-| Safety | Manual | Generated SQL classified + reviewed before execution |
-| Privacy | — | Local-first; choose what leaves the machine |
+|                   | Traditional clients (DataGrip, DBeaver, TablePlus) | db-ai                                                |
+| ----------------- | -------------------------------------------------- | ---------------------------------------------------- |
+| Primary interface | SQL editor                                         | Natural language                                     |
+| Schema awareness  | You hold it in your head                           | Introspected relationship graph                      |
+| AI                | Chat sidebar that guesses                          | Grounded in the actual schema                        |
+| Safety            | Manual                                             | Generated SQL classified + reviewed before execution |
+| Privacy           | —                                                  | Local-first; choose what leaves the machine          |
 
 ---
 
@@ -85,17 +85,17 @@ See [docs/providers.md](docs/providers.md) for all providers and privacy modes.
 
 ## Commands
 
-| Command | Description |
-|---|---|
-| `health` | Check database connectivity |
-| `llm-health` | Check the configured LLM provider (pings the server for Ollama) |
-| `introspect [-o file]` | Introspect the schema and build the relationship graph |
-| `graph --from <table> [--depth n]` | Show the relationship tree from a table |
-| `path --from <a> --to <b>` | Find the join path between two tables |
-| `context <question>` | Build the AI context packet for a question — **no LLM call** |
-| `ask <question>` | Natural language → SQL, with review and optional execution |
-| `explain-query --sql <q>` | Explain an existing SQL query in plain English |
-| `eval [--limit n]` | Run the accuracy eval suite against the configured LLM |
+| Command                            | Description                                                     |
+| ---------------------------------- | --------------------------------------------------------------- |
+| `health`                           | Check database connectivity                                     |
+| `llm-health`                       | Check the configured LLM provider (pings the server for Ollama) |
+| `introspect [-o file]`             | Introspect the schema and build the relationship graph          |
+| `graph --from <table> [--depth n]` | Show the relationship tree from a table                         |
+| `path --from <a> --to <b>`         | Find the join path between two tables                           |
+| `context <question>`               | Build the AI context packet for a question — **no LLM call**    |
+| `ask <question>`                   | Natural language → SQL, with review and optional execution      |
+| `explain-query --sql <q>`          | Explain an existing SQL query in plain English                  |
+| `eval [--limit n]`                 | Run the accuracy eval suite against the configured LLM          |
 
 Common flags: `--url <connectionString>`, `--provider <openai\|anthropic\|ollama>`, `--model <name>`, `--mode <local-only\|schema-sharing\|full-ai>`.
 
@@ -111,14 +111,14 @@ pnpm cli context "customers who spent more than 100 this year"
 
 Set in `.env` (loaded from the repo root). See [.env.example](.env.example).
 
-| Variable | Description | Default |
-|---|---|---|
-| `DATABASE_URL` | Postgres connection string | — |
-| `DB_AI_LLM` | `openai` \| `anthropic` \| `ollama` | `openai` |
-| `DB_AI_MODEL` | Model name (provider-specific) | per-provider default |
-| `DB_AI_PRIVACY_MODE` | `local-only` \| `schema-sharing` \| `full-ai` | `schema-sharing` |
-| `DB_AI_OLLAMA_BASE_URL` | Ollama OpenAI-compatible endpoint | `http://localhost:11434/v1` |
-| `OPENAI_API_KEY` / `ANTHROPIC_API_KEY` | Cloud provider keys | — |
+| Variable                               | Description                                   | Default                     |
+| -------------------------------------- | --------------------------------------------- | --------------------------- |
+| `DATABASE_URL`                         | Postgres connection string                    | —                           |
+| `DB_AI_LLM`                            | `openai` \| `anthropic` \| `ollama`           | `openai`                    |
+| `DB_AI_MODEL`                          | Model name (provider-specific)                | per-provider default        |
+| `DB_AI_PRIVACY_MODE`                   | `local-only` \| `schema-sharing` \| `full-ai` | `schema-sharing`            |
+| `DB_AI_OLLAMA_BASE_URL`                | Ollama OpenAI-compatible endpoint             | `http://localhost:11434/v1` |
+| `OPENAI_API_KEY` / `ANTHROPIC_API_KEY` | Cloud provider keys                           | —                           |
 
 `.env` is gitignored — credentials never get committed.
 
@@ -149,9 +149,11 @@ docs/           Architecture and design documentation
 ## Development
 
 ```bash
-pnpm build      # build all packages (tsc -r)
-pnpm test       # run the vitest suites
-pnpm db:reset   # tear down and recreate the sample database
+pnpm build         # build all packages (tsc -b, incremental via project references)
+pnpm test          # run the vitest suites
+pnpm lint          # eslint (type-aware)
+pnpm format        # prettier --write
+pnpm db:reset      # tear down and recreate the sample database
 ```
 
 ## Status

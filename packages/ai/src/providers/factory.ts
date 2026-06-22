@@ -1,4 +1,4 @@
-import type { AiConfig, AiProviderName, LLMProvider, Message } from "../types.js";
+import type { AiConfig, AiProviderName, LLMProvider } from "../types.js";
 
 export interface CreateProviderOptions {
   provider?: AiProviderName;
@@ -15,9 +15,7 @@ const DEFAULT_MODELS: Record<AiProviderName, string> = {
 };
 
 export function resolveAiConfig(overrides: CreateProviderOptions = {}): AiConfig {
-  const provider = (overrides.provider ??
-    process.env.DB_AI_LLM ??
-    "openai") as AiProviderName;
+  const provider = (overrides.provider ?? process.env.DB_AI_LLM ?? "openai") as AiProviderName;
 
   if (provider !== "openai" && provider !== "anthropic" && provider !== "ollama") {
     throw new Error(`Unsupported provider: ${provider}. Use openai, anthropic, or ollama.`);
@@ -40,9 +38,7 @@ export function isLocalProvider(provider: AiProviderName): boolean {
   return provider === "ollama";
 }
 
-export async function createLLMProvider(
-  options: CreateProviderOptions = {},
-): Promise<LLMProvider> {
+export async function createLLMProvider(options: CreateProviderOptions = {}): Promise<LLMProvider> {
   const config = resolveAiConfig(options);
   const { provider, model } = config;
 

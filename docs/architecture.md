@@ -36,7 +36,7 @@ Pure, dependency-free graph engine. It defines the canonical data model ([`Datab
 
 - **`getNeighbors`** — adjacent tables via foreign keys, in both directions (outgoing/incoming).
 - **`findJoinPath`** — breadth-first search for the shortest FK join path between two tables (default max depth 6). This is what lets the system answer "how do I get from `customer` to `payment`?"
-- **`expandFromTables`** — grow a seed set of tables outward by *n* FK hops. Used by retrieval to pull in related tables a question implies but doesn't name.
+- **`expandFromTables`** — grow a seed set of tables outward by _n_ FK hops. Used by retrieval to pull in related tables a question implies but doesn't name.
 - **`formatRelationshipTree`** — the ASCII tree rendered by `db-ai graph`.
 
 Tables are keyed by a `schema.name` id (`tableId` / `parseTableId`), the stable identity used throughout the system.
@@ -57,6 +57,7 @@ Everything Postgres-specific lives here, so higher layers stay database-agnostic
 The heart of the system. Three sub-areas:
 
 **`context/`** — turns a question + the full graph into a compact, relevant prompt:
+
 - `retrieval.ts` — keyword retrieval (see [Retrieval](#retrieval-how-relevant-tables-are-chosen)).
 - `summary.ts` — renders each selected table as a markdown block (columns with types/PK/nullability, outgoing/incoming FKs).
 - `build.ts` — `buildContext` assembles the final `ContextPacket`: relevant schema sections + discovered join paths + (opt-in) sample rows + the user question.
@@ -64,6 +65,7 @@ The heart of the system. Three sub-areas:
 **`providers/`** — the LLM abstraction. A single `LLMProvider` interface (`complete(messages) → string`) with three implementations (`openai`, `anthropic`, `ollama`) selected by `createLLMProvider`. See [docs/providers.md](providers.md).
 
 **`agent/`** — orchestration:
+
 - `prompts.ts` — the system prompt and the strict JSON response schema the model must return.
 - `agent.ts` — `askQuestion` / `explainQuery` wire context-building to the provider and enforce the privacy gate.
 - `parse.ts` — tolerant parsing of the model's JSON (handles markdown fences) into a typed `AgentResponse`.
@@ -137,7 +139,7 @@ Generated SQL is never executed blindly:
 3. **Read-only execution** — `executeQuery({ readOnly: true })` refuses anything that isn't a `read`, and bounds result size with an automatic `LIMIT`.
 4. **Human in the loop** — the CLI shows the SQL and asks for confirmation before executing (unless `--yes`).
 
-Transparency is a product principle: the generated SQL is *always* shown, and `db-ai context` lets you inspect the exact prompt with no model call at all.
+Transparency is a product principle: the generated SQL is _always_ shown, and `db-ai context` lets you inspect the exact prompt with no model call at all.
 
 ---
 
@@ -145,11 +147,11 @@ Transparency is a product principle: the generated SQL is *always* shown, and `d
 
 Three modes control what leaves the machine (full detail in [docs/providers.md](providers.md)):
 
-| Mode | Schema sent | Row data sent | External calls |
-|---|---|---|---|
-| `local-only` | local model only | no | **blocked for cloud providers** |
-| `schema-sharing` (default) | yes | no | allowed |
-| `full-ai` | yes | sampled rows (opt-in) | allowed |
+| Mode                       | Schema sent      | Row data sent         | External calls                  |
+| -------------------------- | ---------------- | --------------------- | ------------------------------- |
+| `local-only`               | local model only | no                    | **blocked for cloud providers** |
+| `schema-sharing` (default) | yes              | no                    | allowed                         |
+| `full-ai`                  | yes              | sampled rows (opt-in) | allowed                         |
 
 The gate (`assertPrivacyModeAllowsExternal`) treats Ollama as local — so `local-only` + Ollama is a fully offline path where neither schema nor data ever leaves the host.
 
@@ -165,10 +167,10 @@ The gate (`assertPrivacyModeAllowsExternal`) treats Ollama as local — so `loca
 
 ## Where to extend
 
-| Goal | Touch |
-|---|---|
-| New database engine | New `packages/db-*` producing a `DatabaseGraph` |
-| New LLM provider | Add to `packages/ai/src/providers/` + `factory.ts` ([providers.md](providers.md)) |
-| Smarter retrieval | `retrieveRelevantTables` in `context/retrieval.ts` |
-| New agent capability | Extend the intent set in `prompts.ts` + `types.ts` |
-| Measure accuracy | Add cases to `eval/dataset.ts` ([evaluation.md](evaluation.md)) |
+| Goal                 | Touch                                                                             |
+| -------------------- | --------------------------------------------------------------------------------- |
+| New database engine  | New `packages/db-*` producing a `DatabaseGraph`                                   |
+| New LLM provider     | Add to `packages/ai/src/providers/` + `factory.ts` ([providers.md](providers.md)) |
+| Smarter retrieval    | `retrieveRelevantTables` in `context/retrieval.ts`                                |
+| New agent capability | Extend the intent set in `prompts.ts` + `types.ts`                                |
+| Measure accuracy     | Add cases to `eval/dataset.ts` ([evaluation.md](evaluation.md))                   |

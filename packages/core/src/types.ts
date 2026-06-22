@@ -82,7 +82,11 @@ export interface GraphNeighbor {
   direction: "outgoing" | "incoming";
 }
 
-export function getNeighbors(graph: DatabaseGraph, schema: string, tableName: string): GraphNeighbor[] {
+export function getNeighbors(
+  graph: DatabaseGraph,
+  schema: string,
+  tableName: string,
+): GraphNeighbor[] {
   const id = tableId(schema, tableName);
   const neighbors: GraphNeighbor[] = [];
 
@@ -163,11 +167,7 @@ export function findJoinPath(
   return null;
 }
 
-export function expandFromTables(
-  graph: DatabaseGraph,
-  tableNames: string[],
-  hops = 1,
-): Table[] {
+export function expandFromTables(graph: DatabaseGraph, tableNames: string[], hops = 1): Table[] {
   const selected = new Map<string, Table>();
 
   for (const name of tableNames) {

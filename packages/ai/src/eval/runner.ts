@@ -1,12 +1,7 @@
 import type { DatabaseGraph } from "@db-ai/core";
 import { askQuestion } from "../agent/agent.js";
 import { reviewAgentResponse } from "../review.js";
-import type {
-  EvalCase,
-  EvalCaseResult,
-  EvalOptions,
-  EvalSummary,
-} from "./types.js";
+import type { EvalCase, EvalCaseResult, EvalOptions, EvalSummary } from "./types.js";
 
 export interface SqlRunResult {
   rows: Record<string, unknown>[];
@@ -157,8 +152,13 @@ export function summarize(results: EvalCaseResult[]): EvalSummary {
 const pct = (n: number) => `${Math.round(n * 100)}%`;
 
 export function formatEvalCaseLine(r: EvalCaseResult): string {
-  const exec =
-    r.error ? "AGENT-ERR" : r.executed === null ? "no-sql" : r.executed ? "exec:ok" : "exec:FAIL";
+  const exec = r.error
+    ? "AGENT-ERR"
+    : r.executed === null
+      ? "no-sql"
+      : r.executed
+        ? "exec:ok"
+        : "exec:FAIL";
   const check = r.checkOk === null ? "" : r.checkOk ? " check:ok" : " check:FAIL";
   const status = r.error || r.executed === false || r.checkOk === false ? "FAIL" : "ok";
   return `[${status.padEnd(4)}] ${r.id.padEnd(22)} tables ${pct(r.tablesRecall).padStart(4)} ${exec}${check} (${r.durationMs}ms)`;

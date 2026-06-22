@@ -16,15 +16,12 @@ export function getConnectionString(override?: string): string {
   return url;
 }
 
-export function createSampleFetcher(
-  client: { query: (sql: string, params?: unknown[]) => Promise<{ rows: Record<string, unknown>[] }> },
-) {
+export function createSampleFetcher(client: {
+  query: (sql: string, params?: unknown[]) => Promise<{ rows: Record<string, unknown>[] }>;
+}) {
   return {
     async sampleTable(schema: string, table: string, limit: number) {
-      const result = await client.query(
-        `SELECT * FROM "${schema}"."${table}" LIMIT $1`,
-        [limit],
-      );
+      const result = await client.query(`SELECT * FROM "${schema}"."${table}" LIMIT $1`, [limit]);
       return result.rows;
     },
   };

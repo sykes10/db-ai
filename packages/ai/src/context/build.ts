@@ -1,9 +1,5 @@
 import type { DatabaseGraph } from "@db-ai/core";
-import type {
-  AiPrivacyMode,
-  ContextPacket,
-  SampleDataFetcher,
-} from "../types.js";
+import type { AiPrivacyMode, ContextPacket, SampleDataFetcher } from "../types.js";
 import { buildJoinPathDescriptions, retrieveRelevantTables } from "./retrieval.js";
 import { formatSampleData, formatTableSummary, summarizeTable } from "./summary.js";
 

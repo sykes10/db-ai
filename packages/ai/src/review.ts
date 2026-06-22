@@ -72,7 +72,11 @@ export function formatResultsTable(
   const body = rows
     .map((row) =>
       fields
-        .map((f, i) => String(row[f] ?? "").slice(0, widths[i]).padEnd(widths[i]!))
+        .map((f, i) =>
+          String(row[f] ?? "")
+            .slice(0, widths[i])
+            .padEnd(widths[i]!),
+        )
         .join(" | "),
     )
     .join("\n");

@@ -48,7 +48,9 @@ export async function createPostgresClient(config: PostgresConfig): Promise<Post
 export async function healthCheck(config: PostgresConfig): Promise<{ ok: true; database: string }> {
   const client = await createPostgresClient(config);
   try {
-    const result = await client.query<{ database: string }>("SELECT current_database() AS database");
+    const result = await client.query<{ database: string }>(
+      "SELECT current_database() AS database",
+    );
     const database = result.rows[0]?.database;
     if (!database) {
       throw new Error("Could not determine current database");

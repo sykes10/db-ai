@@ -38,8 +38,8 @@ Answer checks:    7/7 correct
 
 For each case ([`EvalCaseResult`](../packages/ai/src/eval/types.ts)):
 
-- **Table recall** — fraction of the expected tables the agent actually selected. *Did it find everything it needed?*
-- **Table precision** — fraction of the agent's selected tables that were expected. *Did it avoid dragging in junk?*
+- **Table recall** — fraction of the expected tables the agent actually selected. _Did it find everything it needed?_
+- **Table precision** — fraction of the agent's selected tables that were expected. _Did it avoid dragging in junk?_
 - **Executed** — did the generated SQL run read-only without error? (`no-sql` if the agent produced no query.)
 - **Answer check** — for cases with a known answer, did the result match?
 
@@ -55,18 +55,18 @@ The aggregate `EvalSummary` reports totals, execution rate, average recall/preci
 interface EvalCase {
   id: string;
   question: string;
-  expectedTables: string[];     // the minimal correct table set
+  expectedTables: string[]; // the minimal correct table set
   expect?: {
-    value?: string | number;    // scalar/aggregate answer (first column of first row)
-    rows?: number;              // expected number of returned rows
+    value?: string | number; // scalar/aggregate answer (first column of first row)
+    rows?: number; // expected number of returned rows
   };
 }
 ```
 
 Two kinds of checks:
 
-- **`value`** — for aggregate answers, compared against the first column of the first row. Example: *"How many films are in the database?"* → `1000`.
-- **`rows`** — for set-returning queries, compared against the row count. Example: *"How many films are in each category?"* → `16` rows.
+- **`value`** — for aggregate answers, compared against the first column of the first row. Example: _"How many films are in the database?"_ → `1000`.
+- **`rows`** — for set-returning queries, compared against the row count. Example: _"How many films are in each category?"_ → `16` rows.
 
 Cases without an `expect` are still scored on table selection and execution — useful for open-ended questions where the answer isn't a fixed number.
 

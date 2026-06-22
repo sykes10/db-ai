@@ -6,8 +6,5 @@
     "composite": true
   },
   "include": ["src/**/*"],
-  "references": [
-    { "path": "../core" },
-    { "path": "../db-postgres" }
-  ]
+  "references": [{ "path": "../core" }, { "path": "../db-postgres" }]
 }

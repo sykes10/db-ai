@@ -8,8 +8,8 @@ Every provider implements one method ([types.ts](../packages/ai/src/types.ts)):
 
 ```ts
 interface LLMProvider {
-  name: AiProviderName;                       // "openai" | "anthropic" | "ollama"
-  complete(messages: Message[]): Promise<string>;  // returns the raw model text
+  name: AiProviderName; // "openai" | "anthropic" | "ollama"
+  complete(messages: Message[]): Promise<string>; // returns the raw model text
 }
 ```
 
@@ -17,11 +17,11 @@ The agent always sends two messages — a system prompt (rules + the required JS
 
 ## Built-in providers
 
-| Provider | `DB_AI_LLM` | Default model | Auth | Notes |
-|---|---|---|---|---|
-| OpenAI | `openai` | `gpt-4o` | `OPENAI_API_KEY` | Chat Completions, `response_format: json_object` |
-| Anthropic | `anthropic` | `claude-sonnet-4-20250514` | `ANTHROPIC_API_KEY` | Messages API, system prompt passed separately |
-| Ollama | `ollama` | `gemma3` | none | Local; uses the OpenAI-compatible `/v1` endpoint |
+| Provider  | `DB_AI_LLM` | Default model              | Auth                | Notes                                            |
+| --------- | ----------- | -------------------------- | ------------------- | ------------------------------------------------ |
+| OpenAI    | `openai`    | `gpt-4o`                   | `OPENAI_API_KEY`    | Chat Completions, `response_format: json_object` |
+| Anthropic | `anthropic` | `claude-sonnet-4-20250514` | `ANTHROPIC_API_KEY` | Messages API, system prompt passed separately    |
+| Ollama    | `ollama`    | `gemma3`                   | none                | Local; uses the OpenAI-compatible `/v1` endpoint |
 
 Configuration precedence for every setting: **explicit CLI flag → environment variable → built-in default**. So `--provider`/`--model` override `.env`, which overrides the defaults above.
 
@@ -77,11 +77,11 @@ pnpm cli llm-health
 
 `DB_AI_PRIVACY_MODE` (or `--mode`) controls what is included in the prompt and whether external calls are allowed. The gate lives in `assertPrivacyModeAllowsExternal` and runs **before** any context is built.
 
-| Mode | Schema in prompt | Sample row data | Cloud provider calls | Use when |
-|---|---|---|---|---|
-| `local-only` | only via a local model | never | **blocked** | Sensitive schemas; air-gapped/offline work |
-| `schema-sharing` *(default)* | yes | never | allowed | You'll share structure but no data |
-| `full-ai` | yes | sampled rows (opt-in) | allowed | You want the model to see example values |
+| Mode                         | Schema in prompt       | Sample row data       | Cloud provider calls | Use when                                   |
+| ---------------------------- | ---------------------- | --------------------- | -------------------- | ------------------------------------------ |
+| `local-only`                 | only via a local model | never                 | **blocked**          | Sensitive schemas; air-gapped/offline work |
+| `schema-sharing` _(default)_ | yes                    | never                 | allowed              | You'll share structure but no data         |
+| `full-ai`                    | yes                    | sampled rows (opt-in) | allowed              | You want the model to see example values   |
 
 Notes:
 

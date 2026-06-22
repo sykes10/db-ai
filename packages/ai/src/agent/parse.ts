@@ -2,13 +2,7 @@ import { z } from "zod";
 import type { AgentResponse } from "../types.js";
 
 const agentResponseSchema = z.object({
-  intent: z.enum([
-    "query",
-    "schema_explanation",
-    "data_discovery",
-    "query_explanation",
-    "unknown",
-  ]),
+  intent: z.enum(["query", "schema_explanation", "data_discovery", "query_explanation", "unknown"]),
   sql: z.string().nullable(),
   explanation: z.string(),
   tables_used: z.array(z.string()),

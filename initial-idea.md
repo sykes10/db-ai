@@ -16,33 +16,33 @@ Current database tools are optimized around SQL.
 
 Examples:
 
-* TablePlus
-* DataGrip
-* DBeaver
-* SSMS
+- TablePlus
+- DataGrip
+- DBeaver
+- SSMS
 
 These tools assume users understand:
 
-* Table structures
-* Foreign key relationships
-* Domain concepts
-* SQL syntax
+- Table structures
+- Foreign key relationships
+- Domain concepts
+- SQL syntax
 
 AI integrations added to these products are often shallow:
 
-* Chat sidebars
-* SQL generation
-* Query explanations
+- Chat sidebars
+- SQL generation
+- Query explanations
 
 They do not fundamentally understand the database being queried.
 
 As databases become larger and more complex, engineers spend increasing amounts of time answering questions such as:
 
-* Which table contains this data?
-* How are these entities related?
-* Which joins should I use?
-* Is this query safe?
-* What does this legacy schema actually represent?
+- Which table contains this data?
+- How are these entities related?
+- Which joins should I use?
+- Is this query safe?
+- What does this legacy schema actually represent?
 
 The opportunity is to make the database itself understandable.
 
@@ -99,21 +99,21 @@ Database credentials remain local.
 
 Users can choose:
 
-* OpenAI
-* Anthropic
-* Gemini
-* Azure OpenAI
-* Local models
+- OpenAI
+- Anthropic
+- Gemini
+- Azure OpenAI
+- Local models
 
 ## Multi Database
 
 Support:
 
-* PostgreSQL
-* SQL Server
-* MySQL
-* MariaDB
-* SQLite
+- PostgreSQL
+- SQL Server
+- MySQL
+- MariaDB
+- SQLite
 
 before considering niche databases.
 
@@ -125,16 +125,16 @@ before considering niche databases.
 
 Responsibilities:
 
-* Connections
-* Query execution
-* Metadata retrieval
-* Schema introspection
+- Connections
+- Query execution
+- Metadata retrieval
+- Schema introspection
 
 Potential technologies:
 
-* node-postgres
-* mssql
-* mysql2
+- node-postgres
+- mssql
+- mysql2
 
 ---
 
@@ -142,11 +142,11 @@ Potential technologies:
 
 Responsibilities:
 
-* Discover tables
-* Discover columns
-* Discover foreign keys
-* Discover indexes
-* Build relationship graph
+- Discover tables
+- Discover columns
+- Discover foreign keys
+- Discover indexes
+- Build relationship graph
 
 Output:
 
@@ -156,7 +156,7 @@ Example:
 
 Customer
 ├── Orders
-│    └── OrderItems
+│ └── OrderItems
 └── Addresses
 
 This becomes the source of truth for AI interactions.
@@ -167,11 +167,11 @@ This becomes the source of truth for AI interactions.
 
 Responsibilities:
 
-* Schema summarization
-* Relationship summaries
-* Context compression
-* Embeddings
-* Retrieval
+- Schema summarization
+- Relationship summaries
+- Context compression
+- Embeddings
+- Retrieval
 
 Purpose:
 
@@ -211,16 +211,16 @@ Capabilities:
 
 Potential stack:
 
-* Tauri
-* React
-* TypeScript
-* Monaco Editor
+- Tauri
+- React
+- TypeScript
+- Monaco Editor
 
 Reasons:
 
-* Small footprint
-* Cross platform
-* Familiar frontend ecosystem
+- Small footprint
+- Cross platform
+- Familiar frontend ecosystem
 
 ---
 
@@ -234,29 +234,29 @@ Features:
 
 ## Database Explorer
 
-* Tables
-* Columns
-* Relationships
+- Tables
+- Columns
+- Relationships
 
 ## SQL Editor
 
-* Execute queries
-* Results grid
+- Execute queries
+- Results grid
 
 ## AI Chat
 
-* Natural language to SQL
-* Explain schema
-* Explain queries
+- Natural language to SQL
+- Explain schema
+- Explain queries
 
 ## Relationship Visualization
 
-* Interactive graph
+- Interactive graph
 
 ## Query Review
 
-* Generated SQL preview
-* User approval required
+- Generated SQL preview
+- User approval required
 
 ---
 
@@ -264,19 +264,19 @@ Features:
 
 Compared to TablePlus:
 
-* Deep schema understanding
-* AI-native workflows
+- Deep schema understanding
+- AI-native workflows
 
 Compared to DataGrip:
 
-* Simpler experience
-* AI-first interface
+- Simpler experience
+- AI-first interface
 
 Compared to ChatGPT:
 
-* Direct database awareness
-* Persistent schema knowledge
-* Query execution
+- Direct database awareness
+- Persistent schema knowledge
+- Query execution
 
 ---
 
@@ -284,10 +284,10 @@ Compared to ChatGPT:
 
 Principles:
 
-* Credentials never leave device.
-* AI providers never receive result sets unless explicitly allowed.
-* Schema sharing is configurable.
-* Support local LLM execution.
+- Credentials never leave device.
+- AI providers never receive result sets unless explicitly allowed.
+- Schema sharing is configurable.
+- Support local LLM execution.
 
 Potential modes:
 
@@ -333,9 +333,9 @@ Build a prototype that:
 
 Success Criteria:
 
-* AI correctly identifies tables.
-* AI correctly identifies joins.
-* AI explains relationships accurately.
-* Generated queries execute successfully.
+- AI correctly identifies tables.
+- AI correctly identifies joins.
+- AI explains relationships accurately.
+- Generated queries execute successfully.
 
 Only after validating these assumptions should a full client be developed.

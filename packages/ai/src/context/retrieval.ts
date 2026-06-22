@@ -7,18 +7,113 @@ import {
 } from "@db-ai/core";
 
 const STOP_WORDS = new Set([
-  "a", "an", "the", "is", "are", "was", "were", "be", "been", "being",
-  "have", "has", "had", "do", "does", "did", "will", "would", "could",
-  "should", "may", "might", "must", "shall", "can", "need", "dare",
-  "ought", "used", "to", "of", "in", "for", "on", "with", "at", "by",
-  "from", "as", "into", "through", "during", "before", "after", "above",
-  "below", "between", "out", "off", "over", "under", "again", "further",
-  "then", "once", "here", "there", "when", "where", "why", "how", "all",
-  "each", "few", "more", "most", "other", "some", "such", "no", "nor",
-  "not", "only", "own", "same", "so", "than", "too", "very", "just",
-  "and", "but", "or", "if", "while", "show", "find", "list", "get",
-  "give", "tell", "what", "which", "who", "whom", "this", "that", "these",
-  "those", "me", "my", "many", "much", "last", "first", "top", "per",
+  "a",
+  "an",
+  "the",
+  "is",
+  "are",
+  "was",
+  "were",
+  "be",
+  "been",
+  "being",
+  "have",
+  "has",
+  "had",
+  "do",
+  "does",
+  "did",
+  "will",
+  "would",
+  "could",
+  "should",
+  "may",
+  "might",
+  "must",
+  "shall",
+  "can",
+  "need",
+  "dare",
+  "ought",
+  "used",
+  "to",
+  "of",
+  "in",
+  "for",
+  "on",
+  "with",
+  "at",
+  "by",
+  "from",
+  "as",
+  "into",
+  "through",
+  "during",
+  "before",
+  "after",
+  "above",
+  "below",
+  "between",
+  "out",
+  "off",
+  "over",
+  "under",
+  "again",
+  "further",
+  "then",
+  "once",
+  "here",
+  "there",
+  "when",
+  "where",
+  "why",
+  "how",
+  "all",
+  "each",
+  "few",
+  "more",
+  "most",
+  "other",
+  "some",
+  "such",
+  "no",
+  "nor",
+  "not",
+  "only",
+  "own",
+  "same",
+  "so",
+  "than",
+  "too",
+  "very",
+  "just",
+  "and",
+  "but",
+  "or",
+  "if",
+  "while",
+  "show",
+  "find",
+  "list",
+  "get",
+  "give",
+  "tell",
+  "what",
+  "which",
+  "who",
+  "whom",
+  "this",
+  "that",
+  "these",
+  "those",
+  "me",
+  "my",
+  "many",
+  "much",
+  "last",
+  "first",
+  "top",
+  "per",
 ]);
 
 /** Partition child tables like payment_p2022_01 when payment exists. */
@@ -28,10 +123,9 @@ export function isPartitionChild(table: Table, graph: DatabaseGraph): boolean {
     return false;
   }
   const parent = match[1];
-  return graph.tables.some(
-    (t) => t.name === parent && t.schema === table.schema && t.kind !== "view",
-  ) || graph.tables.some(
-    (t) => t.name === parent && t.schema === table.schema,
+  return (
+    graph.tables.some((t) => t.name === parent && t.schema === table.schema && t.kind !== "view") ||
+    graph.tables.some((t) => t.name === parent && t.schema === table.schema)
   );
 }
 
@@ -120,9 +214,9 @@ export function retrieveRelevantTables(
     .filter((entry) => entry.score > 0)
     .sort((a, b) => b.score - a.score);
 
-  const seedNames = scored.slice(0, Math.max(3, Math.min(maxTables, scored.length))).map(
-    (s) => s.table.name,
-  );
+  const seedNames = scored
+    .slice(0, Math.max(3, Math.min(maxTables, scored.length)))
+    .map((s) => s.table.name);
 
   if (seedNames.length === 0) {
     // No keyword hits — return core entity tables (non-view, most connected)
@@ -140,10 +234,7 @@ export function retrieveRelevantTables(
 
     return candidates
       .filter((t) => t.kind === "table")
-      .sort(
-        (a, b) =>
-          (connectionCount.get(b.id) ?? 0) - (connectionCount.get(a.id) ?? 0),
-      )
+      .sort((a, b) => (connectionCount.get(b.id) ?? 0) - (connectionCount.get(a.id) ?? 0))
       .slice(0, maxTables);
   }
 
@@ -184,7 +275,9 @@ export function buildJoinPathDescriptions(graph: DatabaseGraph, tables: Table[])
         const joins = path.joins
           .map((j) => `${j.fromTable}.${j.fromColumn} → ${j.toTable}.${j.toColumn}`)
           .join(", ");
-        paths.push(`${a.name} ↔ ${b.name}: ${path.tables.map((t) => t.split(".")[1]).join(" → ")} (${joins})`);
+        paths.push(
+          `${a.name} ↔ ${b.name}: ${path.tables.map((t) => t.split(".")[1]).join(" → ")} (${joins})`,
+        );
       }
     }
   }
