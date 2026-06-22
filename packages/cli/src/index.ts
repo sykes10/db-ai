@@ -15,15 +15,10 @@ import {
   type SqlRunner,
 } from "@db-ai/ai";
 import { findJoinPath, findTableByName, formatRelationshipTree, getNeighbors } from "@db-ai/core";
-import {
-  createPostgresClient,
-  executeQuery,
-  introspectSchema,
-  type QueryExecutor,
-} from "@db-ai/db-postgres";
+import { createPostgresClient, executeQuery, introspectSchema } from "@db-ai/db-postgres";
 import { Command } from "commander";
 import { writeFileSync } from "node:fs";
-import { createSampleFetcher, getConnectionString } from "./config.js";
+import { createQueryExecutor, createSampleFetcher, getConnectionString } from "./config.js";
 import { confirmExecution, parsePrivacyMode, parseProvider } from "./prompt.js";
 
 const program = new Command();
@@ -319,16 +314,7 @@ program
           return;
         }
 
-        const executor: QueryExecutor = {
-          query: async (sql, params) => {
-            const q = await client.query(sql, params);
-            return {
-              rows: q.rows as Record<string, unknown>[],
-              rowCount: q.rowCount ?? q.rows.length,
-              fields: q.fields.map((f) => f.name),
-            };
-          },
-        };
+        const executor = createQueryExecutor(client);
         const result = await executeQuery(executor, response.sql, { readOnly: true });
         console.log(`\n${result.rowCount} row(s):\n`);
         console.log(formatResultsTable(result.rows, result.fields, result.truncated));
@@ -376,16 +362,7 @@ program
     try {
       const graph = await introspectSchema(client);
 
-      const executor: QueryExecutor = {
-        query: async (sql, params) => {
-          const q = await client.query(sql, params);
-          return {
-            rows: q.rows as Record<string, unknown>[],
-            rowCount: q.rowCount ?? q.rows.length,
-            fields: q.fields.map((f) => f.name),
-          };
-        },
-      };
+      const executor = createQueryExecutor(client);
       const runSql: SqlRunner = async (sql) => {
         const result = await executeQuery(executor, sql, { readOnly: true });
         return { rows: result.rows, fields: result.fields };

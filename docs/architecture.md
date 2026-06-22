@@ -45,12 +45,12 @@ Tables are keyed by a `schema.name` id (`tableId` / `parseTableId`), the stable 
 
 Everything Postgres-specific lives here, so higher layers stay database-agnostic (the model the rest of the app sees is `core`'s `DatabaseGraph`, not Postgres rows).
 
-- **`connection.ts`** — a thin pooled client over `pg` (`max: 5`, 30s statement timeout, optional SSL). `createPostgresClient` validates the connection with `SELECT 1` on startup.
+- **`connection.ts`** — a thin pooled client over `pg` (`max: 5`, 30s statement timeout, optional SSL). `createPostgresClient` validates the connection with `SELECT 1` on startup, and exposes `queryReadOnly`, which runs a statement inside a `BEGIN TRANSACTION READ ONLY` block that is always rolled back.
 - **`introspect.ts`** — `introspectSchema` queries `information_schema` and `pg_catalog` to assemble the full `DatabaseGraph`: tables/views, columns, primary keys, foreign keys (with update/delete rules), and indexes. System schemas (`pg_catalog`, `information_schema`, `pg_toast`) are excluded.
 - **`execute.ts`** — query classification and safe execution:
-  - `classifyQuery` → `read` | `write` | `ddl`
+  - `classifyQuery` → `read` | `write` | `ddl`, using a real Postgres parser (`pgsql-ast-parser`) — it recurses into CTE bindings and takes the most dangerous of multiple statements.
   - `isDestructiveQuery` → true for writes/DDL
-  - `executeQuery` enforces read-only mode (rejects non-`read` queries), auto-appends a `LIMIT` to unbounded reads, and reports truncation.
+  - `executeQuery` enforces read-only mode (rejects non-`read` queries), routes execution through the read-only transaction, auto-appends a `LIMIT` to unbounded reads, and reports truncation.
 
 ### `packages/ai` — Context Engine + Agent
 
@@ -132,14 +132,14 @@ This is deliberately a simple, transparent, deterministic heuristic. It's a clea
 
 ## Safety model
 
-Generated SQL is never executed blindly:
+Generated SQL is never executed blindly. Four independent layers, so no single failure lets a write through:
 
-1. **Classification** — `classifyQuery` labels every statement `read` / `write` / `ddl` via pattern matching.
+1. **Parser-based classification** — `classifyQuery` parses the SQL with a real Postgres parser (`pgsql-ast-parser`) and labels it `read` / `write` / `ddl`. Because it works on the AST, not a leading-keyword regex, it sees writes hidden in CTE bindings (`WITH d AS (DELETE …) SELECT …`), takes the most dangerous of stacked statements, and falls back to a conservative keyword scan only when the SQL can't be parsed.
 2. **Review** — `reviewAgentResponse` blocks destructive statements (write/DDL) outright, requiring manual handling.
-3. **Read-only execution** — `executeQuery({ readOnly: true })` refuses anything that isn't a `read`, and bounds result size with an automatic `LIMIT`.
+3. **Read-only execution** — `executeQuery({ readOnly: true })` refuses anything that isn't a `read` _and_ runs it through `queryReadOnly`, i.e. inside a `BEGIN TRANSACTION READ ONLY` that is always rolled back. Postgres itself then rejects any write or DDL — a hard guarantee that holds **even if classification is wrong**. Result size is bounded with an automatic `LIMIT`.
 4. **Human in the loop** — the CLI shows the SQL and asks for confirmation before executing (unless `--yes`).
 
-Transparency is a product principle: the generated SQL is _always_ shown, and `db-ai context` lets you inspect the exact prompt with no model call at all.
+The transaction-level read-only is the backstop: layers 1–2 are advisory and fail-fast, but layer 3 means the database is the final arbiter. Transparency is also a product principle — the generated SQL is _always_ shown, and `db-ai context` lets you inspect the exact prompt with no model call at all.
 
 ---
 

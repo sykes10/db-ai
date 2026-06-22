@@ -17,6 +17,15 @@ export interface PostgresClient {
     sql: string,
     params?: unknown[],
   ): Promise<pg.QueryResult<T>>;
+  /**
+   * Run a query inside a `BEGIN TRANSACTION READ ONLY` block that is always
+   * rolled back. Postgres rejects any write or DDL at the engine level, so this
+   * is the hard guarantee behind read-only execution of generated SQL.
+   */
+  queryReadOnly<T extends pg.QueryResultRow = pg.QueryResultRow>(
+    sql: string,
+    params?: unknown[],
+  ): Promise<pg.QueryResult<T>>;
   close(): Promise<void>;
 }
 
@@ -38,6 +47,23 @@ export async function createPostgresClient(config: PostgresConfig): Promise<Post
   return {
     async query<T extends pg.QueryResultRow = pg.QueryResultRow>(sql: string, params?: unknown[]) {
       return pool.query<T>(sql, params);
+    },
+    async queryReadOnly<T extends pg.QueryResultRow = pg.QueryResultRow>(
+      sql: string,
+      params?: unknown[],
+    ) {
+      const conn = await pool.connect();
+      try {
+        await conn.query("BEGIN TRANSACTION READ ONLY");
+        return await conn.query<T>(sql, params);
+      } finally {
+        try {
+          await conn.query("ROLLBACK");
+        } catch {
+          // Connection may already be aborted; releasing is what matters.
+        }
+        conn.release();
+      }
     },
     async close() {
       await pool.end();
